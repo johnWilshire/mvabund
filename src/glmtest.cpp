@@ -392,7 +392,7 @@ int GlmTest::anova(glm *fit, gsl_matrix *isXvarIn) {
     if (tm->showtime == TRUE)
       printf("Resampling begins for test %d.\n", i);
     for (j = 0; j < tm->nboot; j++) {
-      //            printf("simu %d :", j);
+      printf("simu %d :\n", j);
       nSamp++;
       gsl_vector_set_zero(bStat);
       if (tm->resamp == CASEBOOT) {
@@ -749,7 +749,7 @@ int GlmTest::resampAnovaCase(glm *model, gsl_matrix *bT, gsl_matrix *bX,
   nP = model->Xref->size2;
   gsl_matrix *tXX = gsl_matrix_alloc(nP, nP);
   unsigned int nRows = tm->nRows;
-
+  int n = 0;
   while (isValid == TRUE) {
     for (j = 0; j < nRows; j++) {
       if (bootID != NULL)
@@ -774,6 +774,13 @@ int GlmTest::resampAnovaCase(glm *model, gsl_matrix *bT, gsl_matrix *bX,
     status = gsl_linalg_cholesky_decomp(tXX);
     if (status != GSL_EDOM)
       break;
+    if (bootID != NULL) {
+      if (tm->warning) {
+        printf("case resampling with bootID row #%d\n", i);
+        printf("error: %s\n", gsl_strerror(status));
+      }
+      break;
+    }
   }
 
   gsl_matrix_free(tXX);

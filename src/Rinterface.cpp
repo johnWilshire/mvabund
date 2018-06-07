@@ -138,7 +138,7 @@ List RtoGlmAnova(const List &sparam, const List &rparam, RcppGSL::Matrix &Y,
 
   // resampling test
   myTest.anova(glmPtr[mtype], isXvarIn);
-  myTest.displayAnova();
+  // myTest.displayAnova();
 
   // Timing
   clk_end = clock();

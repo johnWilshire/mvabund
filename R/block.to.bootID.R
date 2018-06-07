@@ -1,12 +1,9 @@
-# used in the summary and anova functions of manyglm and manylm to get a matrix of 
-# boot id's based off of a block, see ?anova.manyglm for more details
 block_to_bootID <- function (block, bootID, nRows, nBoot, resamp) {
   tb = table(block)
   nLevels = length(tb)
   if (any(tb != nRows/nLevels) && resamp != "case") {
-    print(tb)
     stop("Sorry, unless you are using case resampling, block needs to be a balanced factor - same number of rows for each level. Try using resamp='case'.")
-  } else {
+  } else  {
     blockIDs = vector("list",nLevels)
     for(i.level in 1:nLevels)
       blockIDs[[i.level]] = which(block==names(tb)[i.level])
@@ -19,12 +16,21 @@ block_to_bootID <- function (block, bootID, nRows, nBoot, resamp) {
   } else {
     samp <- bootID
   }
+  # fill the rest of the nboot with NA's
+  # maxNboot <- max(sapply(1:nBoot, function(x) {
+  #    length(unlist(blockIDs[samp[x,]]))
+  #  }))
+  # print(paste('maxNboot', maxNboot))
   bootID <-  matrix(NA,nBoot,nRows)
   for(iBoot in 1:nBoot) {
     # unlistIDs is needed to make sure each unlisted blockID ends up in the right place
-    bootID[iBoot, unlistIDs] = unlist(blockIDs[samp[iBoot,]])
+    boot_ids <- unlist(blockIDs[samp[iBoot,]])
+    if(length(boot_ids) != nRows) {
+      boot_ids <- sample(boot_ids, nRows, replace = T)
+    }
+    bootID[iBoot, ] = boot_ids 
   }
-  bootID = bootID - 1 #to fit the format in C, 0 to nRows.
-  if(interactive()) cat(paste("Using block resampling...","\n"))
+  bootID = bootID - 1 #to fit the format in C, 0 to nRows, C uses 0 indexing
+  if(interactive()) cat("Using block resampling...\n")
   bootID
 }

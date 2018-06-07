@@ -315,7 +315,6 @@ anova.manyglm <- function(object, ...,
         }
         ord <- (nModels-1):1
     }
-
     ######## call resampTest Rcpp #########
     val <- RtoGlmAnova(modelParam, testParams, Y, X, O, XvarIn, bootID, shrink.param)
 
